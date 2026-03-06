@@ -9,55 +9,45 @@ import com.sibasundarj8.project.easyride.easyrideApp.entity.RideRequest;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Rider;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.User;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideRequestStatus;
+import com.sibasundarj8.project.easyride.easyrideApp.exception.ResourceNotFoundException;
 import com.sibasundarj8.project.easyride.easyrideApp.repository.RideRequestRepository;
 import com.sibasundarj8.project.easyride.easyrideApp.repository.RiderRepository;
-import com.sibasundarj8.project.easyride.easyrideApp.service.RiderService;
-import com.sibasundarj8.project.easyride.easyrideApp.strategy.DriverMatchingStrategy;
-import com.sibasundarj8.project.easyride.easyrideApp.strategy.RideFareCalculationStrategy;
+import com.sibasundarj8.project.easyride.easyrideApp.service.IRiderService;
+import com.sibasundarj8.project.easyride.easyrideApp.strategy.RideStrategyManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RiderServiceImpl implements RiderService {
+public class RiderServiceImpl implements IRiderService {
+
     private final RiderRepository riderRepository;
-
     private final ModelMapper modelMapper;
-    private final RideFareCalculationStrategy fareCalculationStrategy;
-    private final Map<String, DriverMatchingStrategy> strategies;
     private final RideRequestRepository rideRequestRepository;
-
-    @Value("${driver.matching.strategy}")
-    private String strategyName;
-
-    private List<Driver> matchDrivers(RideRequest rideRequest) {
-        DriverMatchingStrategy strategy = strategies.get(strategyName);
-
-        if (strategy == null) {
-            throw new IllegalStateException("Strategy " + strategyName + " not found");
-        }
-
-        return strategy.findMatchingDrivers(rideRequest);
-    }
+    private final RideStrategyManager rideStrategyManager;
 
     @Override
+    @Transactional
     public RideRequestDto requestRide(RideRequestDto rideRequestDto) {
+        Rider rider = getCurrentRider();
         RideRequest rideRequest = modelMapper.map(rideRequestDto, RideRequest.class);
-        rideRequest.setRideRequestStatus(RideRequestStatus.PENDING);
 
-        Double fare = fareCalculationStrategy.calculateFare(rideRequest);
+        rideRequest.setRideRequestStatus(RideRequestStatus.PENDING);
+        rideRequest.setRider(rider);
+
+        Double fare = rideStrategyManager.getRideFareCalculationStrategy().calculateFare(rideRequest);
         rideRequest.setFare(fare);
 
         RideRequest savedRideRequest = rideRequestRepository.save(rideRequest);
-        matchDrivers(savedRideRequest);
+        List<Driver> drivers = rideStrategyManager.getDriverMatchingStrategy(rider.getRating()).findMatchingDrivers(rideRequest);
+
+        // TODO : Send notification to all the drivers about this ride.
 
         return modelMapper.map(savedRideRequest, RideRequestDto.class);
     }
@@ -91,5 +81,12 @@ public class RiderServiceImpl implements RiderService {
                 .build();
 
         return riderRepository.save(rider);
+    }
+
+    @Override
+    public Rider getCurrentRider() {
+        // TODO : implement spring security
+
+        return riderRepository.findById(1L).orElseThrow(() -> new ResourceNotFoundException("Rider not found with id: " + 1));
     }
 }

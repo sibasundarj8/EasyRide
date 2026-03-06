@@ -5,6 +5,6 @@ import com.sibasundarj8.project.easyride.easyrideApp.entity.RideRequest;
 
 import java.util.List;
 
-public interface DriverMatchingStrategy {
+public interface IDriverMatchingStrategy {
     List<Driver> findMatchingDrivers(RideRequest rideRequest);
 }

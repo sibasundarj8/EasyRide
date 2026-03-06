@@ -4,7 +4,7 @@ import com.sibasundarj8.project.easyride.easyrideApp.dto.DriverDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.SignupDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.UserDto;
 
-public interface AuthService {
+public interface IAuthService {
 
     String login(String email, String password);
 

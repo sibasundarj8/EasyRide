@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DriverDto {
-    private UserDto user;
-    private Double rating;
+public class OtpDto {
+    private String otp;
 }

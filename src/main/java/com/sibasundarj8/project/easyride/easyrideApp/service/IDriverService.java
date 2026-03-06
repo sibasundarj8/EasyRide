@@ -6,13 +6,13 @@ import com.sibasundarj8.project.easyride.easyrideApp.dto.RiderDto;
 
 import java.util.List;
 
-public interface DriverService {
+public interface IDriverService {
 
-    RideDto acceptRide(Long rideId);
+    RideDto acceptRide(Long rideRequestId);
 
     RideDto cancelRide(Long rideId);
 
-    RideDto startRide(Long rideId);
+    RideDto startRide(Long rideId, String otp);
 
     RideDto endRide(Long rideId);
 

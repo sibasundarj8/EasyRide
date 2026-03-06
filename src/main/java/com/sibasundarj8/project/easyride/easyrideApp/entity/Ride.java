@@ -4,15 +4,17 @@ import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.PaymentMethod;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Ride {

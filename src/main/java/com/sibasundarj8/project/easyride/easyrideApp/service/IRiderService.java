@@ -9,7 +9,7 @@ import com.sibasundarj8.project.easyride.easyrideApp.entity.User;
 
 import java.util.List;
 
-public interface RiderService {
+public interface IRiderService {
 
     RideRequestDto requestRide(RideRequestDto rideRequestDto);
 
@@ -22,4 +22,6 @@ public interface RiderService {
     List<RideDto> getAllMyRides();
 
     Rider createRider(User user);
+
+    Rider getCurrentRider();
 }

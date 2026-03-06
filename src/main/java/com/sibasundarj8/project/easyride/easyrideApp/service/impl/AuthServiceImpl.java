@@ -7,8 +7,8 @@ import com.sibasundarj8.project.easyride.easyrideApp.entity.User;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.Role;
 import com.sibasundarj8.project.easyride.easyrideApp.exception.RuntimeConflictException;
 import com.sibasundarj8.project.easyride.easyrideApp.repository.UserRepository;
-import com.sibasundarj8.project.easyride.easyrideApp.service.AuthService;
-import com.sibasundarj8.project.easyride.easyrideApp.service.RiderService;
+import com.sibasundarj8.project.easyride.easyrideApp.service.IAuthService;
+import com.sibasundarj8.project.easyride.easyrideApp.service.IRiderService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,11 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl implements IAuthService {
 
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
-    private final RiderService riderService;
+    private final IRiderService IRiderService;
 
     @Override
     public String login(String email, String password) {
@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
         user.getRoles().add(Role.RIDER);
 
         User savedUser = userRepository.save(user);
-        riderService.createRider(savedUser);
+        IRiderService.createRider(savedUser);
 
         // TODO wallet related service here
 

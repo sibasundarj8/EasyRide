@@ -3,19 +3,20 @@ package com.sibasundarj8.project.easyride.easyrideApp.service;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideRequestDto;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Driver;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Ride;
+import com.sibasundarj8.project.easyride.easyrideApp.entity.RideRequest;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-public interface RideService {
+public interface IRideService {
 
     Ride getRideById(Long rideId);
 
-    void matchWithRiders(RideRequestDto rideRequestDto);
+    void matchWithDrivers(RideRequestDto rideRequestDto);
 
-    Ride createNewRide(RideRequestDto rideRequestDto, Driver driver);
+    Ride createNewRide(RideRequest rideRequest, Driver driver);
 
-    Ride updateRideStatus(Long rideId, RideStatus rideStatus);
+    Ride updateRideStatus(Ride ride, RideStatus rideStatus);
 
     Page<Ride> getAllRidesOfRider(Long rideId, PageRequest pageRequest);
 
