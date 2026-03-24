@@ -27,7 +27,8 @@ public class User {
 
     private String password;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_role")
     @Enumerated(EnumType.STRING)
     @Setter(AccessLevel.NONE)
     private Set<Role> roles = new HashSet<>();
