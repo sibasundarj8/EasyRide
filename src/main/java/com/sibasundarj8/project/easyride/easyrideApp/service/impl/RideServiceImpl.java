@@ -1,20 +1,22 @@
 package com.sibasundarj8.project.easyride.easyrideApp.service.impl;
 
+import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideRequestDto;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Driver;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Ride;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.RideRequest;
+import com.sibasundarj8.project.easyride.easyrideApp.entity.Rider;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideRequestStatus;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideStatus;
 import com.sibasundarj8.project.easyride.easyrideApp.exception.ResourceNotFoundException;
 import com.sibasundarj8.project.easyride.easyrideApp.repository.RideRepository;
+import com.sibasundarj8.project.easyride.easyrideApp.repository.RiderRepository;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IRideRequestService;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IRideService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ import java.util.Random;
 public class RideServiceImpl implements IRideService {
 
     private final RideRepository rideRepository;
+    private final RiderRepository riderRepository;
     private final IRideRequestService rideRequestService;
     private final ModelMapper modelMapper;
 
@@ -65,13 +68,16 @@ public class RideServiceImpl implements IRideService {
     }
 
     @Override
-    public Page<Ride> getAllRidesOfRider(Long rideId, PageRequest pageRequest) {
-        return null;
+    @Transactional(readOnly = true)
+    public Page<RideDto> getAllRidesOfRider(Rider rider, Pageable pageable) {
+         return rideRepository.findByRider(rider, pageable)
+                 .map((element) -> modelMapper.map(element, RideDto.class));
     }
 
     @Override
-    public Page<Ride> getAllRidesOfDriver(Long driverId, PageRequest pageRequest) {
-        return null;
+    public Page<RideDto> getAllRidesOfDriver(Driver driver, Pageable pageable) {
+        return rideRepository.findByDriver(driver, pageable)
+                .map(ride -> modelMapper.map(ride, RideDto.class));
     }
 
     private String generateRandomOtp() {

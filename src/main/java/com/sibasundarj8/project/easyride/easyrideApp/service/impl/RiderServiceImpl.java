@@ -4,19 +4,21 @@ import com.sibasundarj8.project.easyride.easyrideApp.dto.DriverDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideRequestDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RiderDto;
-import com.sibasundarj8.project.easyride.easyrideApp.entity.Driver;
-import com.sibasundarj8.project.easyride.easyrideApp.entity.RideRequest;
-import com.sibasundarj8.project.easyride.easyrideApp.entity.Rider;
-import com.sibasundarj8.project.easyride.easyrideApp.entity.User;
+import com.sibasundarj8.project.easyride.easyrideApp.entity.*;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideRequestStatus;
+import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideStatus;
 import com.sibasundarj8.project.easyride.easyrideApp.exception.ResourceNotFoundException;
 import com.sibasundarj8.project.easyride.easyrideApp.repository.RideRequestRepository;
 import com.sibasundarj8.project.easyride.easyrideApp.repository.RiderRepository;
+import com.sibasundarj8.project.easyride.easyrideApp.service.IDriverService;
+import com.sibasundarj8.project.easyride.easyrideApp.service.IRideService;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IRiderService;
 import com.sibasundarj8.project.easyride.easyrideApp.strategy.RideStrategyManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,8 @@ public class RiderServiceImpl implements IRiderService {
     private final ModelMapper modelMapper;
     private final RideRequestRepository rideRequestRepository;
     private final RideStrategyManager rideStrategyManager;
+    private final IRideService rideService;
+    private final IDriverService driverService;
 
     @Override
     @Transactional
@@ -53,8 +57,23 @@ public class RiderServiceImpl implements IRiderService {
     }
 
     @Override
+    @Transactional
     public RideDto cancelRide(Long rideId) {
-        return null;
+        Ride ride = rideService.getRideById(rideId);
+        Rider rider = getCurrentRider();
+
+        if (!rider.equals(ride.getRider())) {
+            throw new RuntimeException("Rider don't own the ride with rideId: " + rideId);
+        }
+
+        if (!ride.getRideStatus().equals(RideStatus.CONFIRMED)) {
+            throw new RuntimeException("Ride can't be canceled, ride is: " + ride.getRideStatus());
+        }
+
+        ride.setRideStatus(RideStatus.CANCELLED);
+        driverService.updateAvailability(ride.getDriver(), true);
+
+        return modelMapper.map(ride, RideDto.class);
     }
 
     @Override
@@ -63,13 +82,18 @@ public class RiderServiceImpl implements IRiderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RiderDto getMyProfile() {
-        return null;
+        Rider rider = getCurrentRider();
+        return modelMapper.map(rider, RiderDto.class);
     }
 
     @Override
-    public List<RideDto> getAllMyRides() {
-        return List.of();
+    @Transactional(readOnly = true)
+    public Page<RideDto> getAllMyRides(Pageable pageable) {
+        Rider rider = this.getCurrentRider();
+        return rideService.getAllRidesOfRider(rider, pageable)
+                .map((ride) -> modelMapper.map(ride, RideDto.class));
     }
 
     @Override

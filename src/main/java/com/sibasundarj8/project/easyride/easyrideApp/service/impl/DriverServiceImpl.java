@@ -15,11 +15,12 @@ import com.sibasundarj8.project.easyride.easyrideApp.service.IRideRequestService
 import com.sibasundarj8.project.easyride.easyrideApp.service.IRideService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -42,8 +43,7 @@ public class DriverServiceImpl implements IDriverService {
 
         // Set driver's availability to false : now driver is unable to accept any ride request
         Driver driver = this.getCurrentDriver();
-        driver.setAvailable(false);
-        Driver savedDriver = driverRepository.save(driver);
+        Driver savedDriver = updateAvailability(driver, false);
 
         // now a Ride object will be created with Driver and Fare and status will be conformed.
         Ride ride = rideService.createNewRide(rideRequest, savedDriver);
@@ -52,8 +52,23 @@ public class DriverServiceImpl implements IDriverService {
     }
 
     @Override
+    @Transactional
     public RideDto cancelRide(Long rideId) {
-        return null;
+        Ride ride = rideService.getRideById(rideId);
+        Driver driver = this.getCurrentDriver();
+
+        if (!driver.equals(ride.getDriver())) {
+            throw new RuntimeException("Driver can't be cancel a ride as he has not accepted the ride.");
+        }
+
+        if (!ride.getRideStatus().equals(RideStatus.CONFIRMED)) {
+            throw new RuntimeException("Ride can't be canceled, invalid status: " + ride.getRideStatus());
+        }
+
+        ride.setRideStatus(RideStatus.CANCELLED);
+        updateAvailability(driver, true);
+
+        return modelMapper.map(ride, RideDto.class);
     }
 
     @Override
@@ -92,12 +107,15 @@ public class DriverServiceImpl implements IDriverService {
 
     @Override
     public DriverDto getMyProfile() {
-        return null;
+        Driver driver = this.getCurrentDriver();
+        return modelMapper.map(driver, DriverDto.class);
     }
 
     @Override
-    public List<RideDto> getAllMyRides() {
-        return List.of();
+    public Page<RideDto> getAllMyRides(Pageable pageable) {
+        Driver driver = this.getCurrentDriver();
+        return rideService.getAllRidesOfDriver(driver, pageable)
+                .map((ride) -> modelMapper.map(ride, RideDto.class));
     }
 
     private void validateRideRequest(RideRequest rideRequest) {
@@ -111,11 +129,19 @@ public class DriverServiceImpl implements IDriverService {
         }
     }
 
-    private Driver getCurrentDriver() {
+    @Override
+    public Driver getCurrentDriver() {
 
         // TODO : implement Spring security here
 
         return driverRepository.findById(15L)
                 .orElseThrow(() -> new ResourceNotFoundException("Current Driver not found !!"));
+    }
+
+    @Override
+    @Transactional
+    public Driver updateAvailability(Driver driver, Boolean availability) {
+        driver.setAvailable(availability);
+        return driverRepository.save(driver);
     }
 }
