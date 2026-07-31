@@ -9,6 +9,7 @@ import com.sibasundarj8.project.easyride.easyrideApp.exception.RuntimeConflictEx
 import com.sibasundarj8.project.easyride.easyrideApp.repository.UserRepository;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IAuthService;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IRiderService;
+import com.sibasundarj8.project.easyride.easyrideApp.service.IWalletService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class AuthServiceImpl implements IAuthService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final IRiderService IRiderService;
+    private final IWalletService walletService;
 
     @Override
     public String login(String email, String password) {
@@ -39,7 +41,7 @@ public class AuthServiceImpl implements IAuthService {
         User savedUser = userRepository.save(user);
         IRiderService.createRider(savedUser);
 
-        // TODO wallet related service here
+        walletService.createNewWallet(savedUser);
 
         return modelMapper.map(savedUser, UserDto.class);
     }

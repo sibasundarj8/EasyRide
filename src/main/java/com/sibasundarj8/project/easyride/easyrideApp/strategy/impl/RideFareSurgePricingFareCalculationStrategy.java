@@ -11,6 +11,6 @@ public class RideFareSurgePricingFareCalculationStrategy implements IRideFareCal
 
     @Override
     public double calculateFare(RideRequest rideRequest) {
-        return 0;
+        return 246;
     }
 }

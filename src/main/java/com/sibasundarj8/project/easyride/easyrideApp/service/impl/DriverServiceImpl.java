@@ -11,6 +11,7 @@ import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideStatus;
 import com.sibasundarj8.project.easyride.easyrideApp.exception.ResourceNotFoundException;
 import com.sibasundarj8.project.easyride.easyrideApp.repository.DriverRepository;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IDriverService;
+import com.sibasundarj8.project.easyride.easyrideApp.service.IPaymentService;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IRideRequestService;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IRideService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class DriverServiceImpl implements IDriverService {
 
     private final IRideService rideService;
     private final IRideRequestService rideRequestService;
+    private final IPaymentService paymentService;
+
     private final ModelMapper modelMapper;
 
     @Override
@@ -92,12 +95,32 @@ public class DriverServiceImpl implements IDriverService {
         ride.setStartedAt(LocalDateTime.now());
         Ride savedRide = rideService.updateRideStatus(ride, RideStatus.ONGOING);
 
+        paymentService.createPayment(savedRide);
+
         return modelMapper.map(savedRide, RideDto.class);
     }
 
     @Override
+    @Transactional
     public RideDto endRide(Long rideId) {
-        return null;
+        Ride ride = rideService.getRideById(rideId);
+        Driver driver = this.getCurrentDriver();
+
+        if (!driver.equals(ride.getDriver())) {
+            throw new ResourceNotFoundException("Current driver is not associated with this ride with id: " + rideId);
+        }
+
+        if (!ride.getRideStatus().equals(RideStatus.ONGOING)) {
+            throw new RuntimeException("Ride status is not ONGOING hence can't be ended, status: " + ride.getRideStatus());
+        }
+
+        ride.setEndedAt(LocalDateTime.now());
+        Ride savedRide = rideService.updateRideStatus(ride, RideStatus.ENDED);
+
+        paymentService.processPayment(ride);
+        updateAvailability(driver, true);
+
+        return modelMapper.map(savedRide, RideDto.class);
     }
 
     @Override

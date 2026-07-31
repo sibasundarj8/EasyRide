@@ -14,13 +14,23 @@ public class DriverController {
 
     private final IDriverService driverService;
 
-    @PostMapping("/acceptRide/{rideRequestId}")
+    @PostMapping("/accept_ride/{rideRequestId}")
     public ResponseEntity<RideDto> acceptRide(@PathVariable Long rideRequestId) {
         return ResponseEntity.ok(driverService.acceptRide(rideRequestId));
     }
 
-    @PostMapping("/startRide/{rideId}")
+    @PostMapping("/cancel_ride/{rideId}")
+    public ResponseEntity<RideDto> cancelRide(@PathVariable Long rideId) {
+        return ResponseEntity.ok(driverService.cancelRide(rideId));
+    }
+
+    @PostMapping("/start_ride/{rideId}")
     public ResponseEntity<RideDto> startRide(@PathVariable Long rideId, @RequestBody OtpDto otp) {
         return ResponseEntity.ok(driverService.startRide(rideId, otp.getOtp()));
+    }
+
+    @PostMapping("/end_ride/{rideId}")
+    public ResponseEntity<RideDto> endRide(@PathVariable Long rideId) {
+        return ResponseEntity.ok(driverService.endRide(rideId));
     }
 }

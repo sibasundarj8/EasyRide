@@ -3,17 +3,17 @@ package com.sibasundarj8.project.easyride.easyrideApp.entity;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.PaymentMethod;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class Payment {
 
     @Id

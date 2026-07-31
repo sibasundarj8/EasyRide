@@ -15,7 +15,6 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     @Query(value = """
                 SELECT d.*
                 FROM driver d
-                JOIN app_user u ON d.user_id = u.id
                 WHERE d.available = true AND ST_DWithin(d.current_location, :pickupLocation, 0.03)
                 ORDER BY d.current_location <-> :pickupLocation
                 LIMIT 10
@@ -25,7 +24,6 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
     @Query(value = """
                 SELECT d.*
                 FROM driver d
-                JOIN app_user u ON d.user_id = u.id
                 WHERE d.available = true AND ST_DWithin(d.current_location, :pickupLocation, 0.05)
                 ORDER BY d.rating DESC, d.current_location <-> :pickupLocation
                 LIMIT 10
