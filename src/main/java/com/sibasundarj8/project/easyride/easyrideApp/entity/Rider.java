@@ -20,5 +20,7 @@ public class Rider {
     @JoinColumn(name = "id")
     private User user;
 
+    private Integer ratingSum;
+    private Integer ratingCount;
     private Double rating;
 }

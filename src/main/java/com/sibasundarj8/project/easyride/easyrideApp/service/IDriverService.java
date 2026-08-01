@@ -1,8 +1,8 @@
 package com.sibasundarj8.project.easyride.easyrideApp.service;
 
 import com.sibasundarj8.project.easyride.easyrideApp.dto.DriverDto;
+import com.sibasundarj8.project.easyride.easyrideApp.dto.RateDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
-import com.sibasundarj8.project.easyride.easyrideApp.dto.RiderDto;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Driver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +17,7 @@ public interface IDriverService {
 
     RideDto endRide(Long rideId);
 
-    RiderDto reteRider(Long RideId, Integer rating);
+    void rateRide(Long rideId, RateDto rateDto);
 
     DriverDto getMyProfile();
 

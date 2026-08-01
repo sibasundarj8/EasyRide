@@ -1,5 +1,6 @@
 package com.sibasundarj8.project.easyride.easyrideApp.service;
 
+import com.sibasundarj8.project.easyride.easyrideApp.dto.RateDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideRequestDto;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Driver;
@@ -23,4 +24,8 @@ public interface IRideService {
     Page<RideDto> getAllRidesOfRider(Rider rider, Pageable pageable);
 
     Page<RideDto> getAllRidesOfDriver(Driver driver, Pageable pageable);
+
+    void rateRider(Long rideId, RateDto dto);
+
+    void rateDriver(Long rideId, RateDto dto);
 }

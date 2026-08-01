@@ -27,6 +27,8 @@ public class Driver {
     @Enumerated(EnumType.STRING)
     private VehicleType vehicleType;
 
+    private Integer ratingSum;
+    private Integer ratingCount;
     private Double rating;
     private Boolean available;
 

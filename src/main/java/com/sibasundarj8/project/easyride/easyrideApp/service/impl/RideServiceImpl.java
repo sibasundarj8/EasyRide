@@ -1,18 +1,14 @@
 package com.sibasundarj8.project.easyride.easyrideApp.service.impl;
 
+import com.sibasundarj8.project.easyride.easyrideApp.dto.RateDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideRequestDto;
-import com.sibasundarj8.project.easyride.easyrideApp.entity.Driver;
-import com.sibasundarj8.project.easyride.easyrideApp.entity.Ride;
-import com.sibasundarj8.project.easyride.easyrideApp.entity.RideRequest;
-import com.sibasundarj8.project.easyride.easyrideApp.entity.Rider;
+import com.sibasundarj8.project.easyride.easyrideApp.entity.*;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideRequestStatus;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideStatus;
 import com.sibasundarj8.project.easyride.easyrideApp.exception.ResourceNotFoundException;
 import com.sibasundarj8.project.easyride.easyrideApp.repository.RideRepository;
-import com.sibasundarj8.project.easyride.easyrideApp.repository.RiderRepository;
-import com.sibasundarj8.project.easyride.easyrideApp.service.IRideRequestService;
-import com.sibasundarj8.project.easyride.easyrideApp.service.IRideService;
+import com.sibasundarj8.project.easyride.easyrideApp.service.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -27,9 +23,11 @@ import java.util.Random;
 public class RideServiceImpl implements IRideService {
 
     private final RideRepository rideRepository;
-    private final RiderRepository riderRepository;
     private final IRideRequestService rideRequestService;
+    private final ICurrentUserService currentUserService;
+    private final IRatingService ratingService;
     private final ModelMapper modelMapper;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -84,5 +82,53 @@ public class RideServiceImpl implements IRideService {
         Random random = new Random();
         int otp = random.nextInt(10000);
         return String.format("%04d", otp);
+    }
+
+    @Override
+    @Transactional
+    public void rateRider(Long rideId, RateDto dto) {
+        User user = currentUserService.getCurrentUser();
+        Ride ride = getRideById(rideId);
+        Rider rider = ride.getRider();
+        Driver driver = ride.getDriver();
+
+        if (!driver.getId().equals(user.getId())) {
+            throw new RuntimeException("You are not associated with this ride, rideId: " + rideId);
+        }
+
+        if (!ride.getRideStatus().equals(RideStatus.ENDED)) {
+            throw new IllegalStateException("Ride has not ended yet, rideId: " + rideId);
+        }
+
+        if (ride.isRiderRated()) {
+            throw new IllegalStateException("Ride is already rated, rideId: " + rideId);
+        } else {
+            ratingService.rateRider(rider, dto);
+            ride.setRiderRated(true);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void rateDriver(Long rideId, RateDto dto) {
+        User user = currentUserService.getCurrentUser();
+        Ride ride = getRideById(rideId);
+        Rider rider = ride.getRider();
+        Driver driver = ride.getDriver();
+
+        if (!rider.getId().equals(user.getId())) {
+            throw new RuntimeException("You are not associated with this ride, rideId: " + rideId);
+        }
+
+        if (!ride.getRideStatus().equals(RideStatus.ENDED)) {
+            throw new IllegalStateException("Ride has not ended yet, rideId: " + rideId);
+        }
+
+        if (ride.isDriverRated()) {
+            throw new IllegalStateException("Ride is already rated, rideId: " + rideId);
+        } else {
+            ratingService.rateDriver(driver, dto);
+            ride.setDriverRated(true);
+        }
     }
 }

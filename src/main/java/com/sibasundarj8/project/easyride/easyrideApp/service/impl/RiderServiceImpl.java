@@ -1,9 +1,6 @@
 package com.sibasundarj8.project.easyride.easyrideApp.service.impl;
 
-import com.sibasundarj8.project.easyride.easyrideApp.dto.DriverDto;
-import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
-import com.sibasundarj8.project.easyride.easyrideApp.dto.RideRequestDto;
-import com.sibasundarj8.project.easyride.easyrideApp.dto.RiderDto;
+import com.sibasundarj8.project.easyride.easyrideApp.dto.*;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.*;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideRequestStatus;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.RideStatus;
@@ -77,8 +74,9 @@ public class RiderServiceImpl implements IRiderService {
     }
 
     @Override
-    public DriverDto reteDriver(Long RideId, Integer rating) {
-        return null;
+    @Transactional
+    public void rateRide(Long rideId, RateDto rateDto) {
+        rideService.rateDriver(rideId, rateDto);
     }
 
     @Override

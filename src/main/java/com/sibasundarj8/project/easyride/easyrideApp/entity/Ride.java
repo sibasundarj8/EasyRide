@@ -50,4 +50,6 @@ public class Ride {
     private Double fare;
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
+    private boolean riderRated;
+    private boolean driverRated;
 }

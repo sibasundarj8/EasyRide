@@ -21,7 +21,7 @@ public class AuthServiceImpl implements IAuthService {
 
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
-    private final IRiderService IRiderService;
+    private final IRiderService riderService;
     private final IWalletService walletService;
 
     @Override
@@ -39,7 +39,7 @@ public class AuthServiceImpl implements IAuthService {
         user.getRoles().add(Role.RIDER);
 
         User savedUser = userRepository.save(user);
-        IRiderService.createRider(savedUser);
+        riderService.createRider(savedUser);
 
         walletService.createNewWallet(savedUser);
 
@@ -49,5 +49,10 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public DriverDto onboardNewDriver(Long userId) {
         return null;
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return userRepository.findById(1L).orElseThrow(() -> new RuntimeException("User not found called from [authService]"));
     }
 }

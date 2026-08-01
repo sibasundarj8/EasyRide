@@ -1,8 +1,8 @@
 package com.sibasundarj8.project.easyride.easyrideApp.service.impl;
 
 import com.sibasundarj8.project.easyride.easyrideApp.dto.DriverDto;
+import com.sibasundarj8.project.easyride.easyrideApp.dto.RateDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
-import com.sibasundarj8.project.easyride.easyrideApp.dto.RiderDto;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Driver;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.Ride;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.RideRequest;
@@ -124,8 +124,9 @@ public class DriverServiceImpl implements IDriverService {
     }
 
     @Override
-    public RiderDto reteRider(Long RideId, Integer rating) {
-        return null;
+    @Transactional
+    public void rateRide(Long rideId, RateDto rateDto) {
+        rideService.rateRider(rideId, rateDto);
     }
 
     @Override

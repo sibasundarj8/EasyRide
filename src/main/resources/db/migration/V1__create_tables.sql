@@ -33,7 +33,9 @@ CREATE TABLE user_role (
 
 CREATE TABLE rider (
     id BIGINT PRIMARY KEY,
-    rating DOUBLE PRECISION,
+    rating_sum INTEGER NOT NULL DEFAULT 0,
+    rating_count INTEGER NOT NULL DEFAULT 0,
+    rating DOUBLE PRECISION NOT NULL DEFAULT 0.0,
 
     CONSTRAINT fk_rider_user
         FOREIGN KEY (id)
@@ -49,7 +51,9 @@ CREATE TABLE driver (
     id BIGINT PRIMARY KEY,
     vehicle_no VARCHAR(255) NOT NULL,
     vehicle_type VARCHAR(30),
-    rating DOUBLE PRECISION,
+    rating_sum INTEGER NOT NULL DEFAULT 0,
+    rating_count INTEGER NOT NULL DEFAULT 0,
+    rating DOUBLE PRECISION NOT NULL DEFAULT 0.0,
     available BOOLEAN,
     current_location geometry(Point,4326),
 
@@ -109,51 +113,52 @@ CREATE TABLE ride_request (
 --------------------------------------------------
 
 CREATE TABLE ride (
-                      id BIGSERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
 
-                      pickup_location geometry(Point,4326),
-                      drop_off_location geometry(Point,4326),
+    pickup_location geometry(Point,4326),
+    drop_off_location geometry(Point,4326),
 
-                      created_time TIMESTAMP,
+    created_time TIMESTAMP,
 
-                      rider_id BIGINT,
-                      driver_id BIGINT,
+    rider_id BIGINT,
+    driver_id BIGINT,
 
-                      payment_method VARCHAR(20),
-                      ride_status VARCHAR(20),
+    payment_method VARCHAR(20),
+    ride_status VARCHAR(20),
 
-                      otp VARCHAR(255),
+    otp VARCHAR(255),
 
-                      fare DOUBLE PRECISION,
+    fare DOUBLE PRECISION,
 
-                      started_at TIMESTAMP,
-                      ended_at TIMESTAMP,
+    started_at TIMESTAMP,
+    ended_at TIMESTAMP,
 
-                      CONSTRAINT fk_ride_rider
-                          FOREIGN KEY (rider_id)
-                              REFERENCES rider(id),
+    rider_rated BOOLEAN NOT NULL DEFAULT FALSE,
+    driver_rated BOOLEAN NOT NULL DEFAULT FALSE,
 
-                      CONSTRAINT fk_ride_driver
-                          FOREIGN KEY (driver_id)
-                              REFERENCES driver(id),
+    CONSTRAINT fk_ride_rider
+        FOREIGN KEY (rider_id)
+            REFERENCES rider(id),
 
-                      CONSTRAINT chk_ride_payment
-                          CHECK (
-                              payment_method IN (
-                                                 'CASH',
-                                                 'WALLET'
-                                  )
-                              ),
+    CONSTRAINT fk_ride_driver
+        FOREIGN KEY (driver_id)
+            REFERENCES driver(id),
 
-                      CONSTRAINT chk_ride_status
-                          CHECK (
-                              ride_status IN (
-                                              'CANCELLED',
-                                              'CONFIRMED',
-                                              'ONGOING',
-                                              'ENDED'
-                                  )
-                              )
+    CONSTRAINT chk_ride_payment CHECK (
+        payment_method IN (
+                'CASH',
+                'WALLET'
+            )
+        ),
+
+    CONSTRAINT chk_ride_status CHECK (
+        ride_status IN (
+                'CANCELLED',
+                'CONFIRMED',
+                'ONGOING',
+                'ENDED'
+            )
+        )
 );
 
 --------------------------------------------------
