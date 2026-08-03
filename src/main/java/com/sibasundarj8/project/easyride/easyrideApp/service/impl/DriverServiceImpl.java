@@ -168,4 +168,10 @@ public class DriverServiceImpl implements IDriverService {
         driver.setAvailable(availability);
         return driverRepository.save(driver);
     }
+
+    @Override
+    @Transactional
+    public Driver createNewDriver(Driver driver) {
+        return driverRepository.save(driver);
+    }
 }

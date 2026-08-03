@@ -1,9 +1,6 @@
 package com.sibasundarj8.project.easyride.easyrideApp.dto;
 
 import com.sibasundarj8.project.easyride.easyrideApp.entity.enums.VehicleType;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

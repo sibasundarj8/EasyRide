@@ -54,7 +54,7 @@ CREATE TABLE driver (
     rating_sum INTEGER NOT NULL DEFAULT 0,
     rating_count INTEGER NOT NULL DEFAULT 0,
     rating DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    available BOOLEAN,
+    available BOOLEAN NOT NULL DEFAULT TRUE,
     current_location geometry(Point,4326),
 
     CONSTRAINT fk_driver_user
@@ -146,19 +146,19 @@ CREATE TABLE ride (
 
     CONSTRAINT chk_ride_payment CHECK (
         payment_method IN (
-                'CASH',
-                'WALLET'
-            )
-        ),
+            'CASH',
+            'WALLET'
+        )
+    ),
 
     CONSTRAINT chk_ride_status CHECK (
         ride_status IN (
-                'CANCELLED',
-                'CONFIRMED',
-                'ONGOING',
-                'ENDED'
-            )
+            'CANCELLED',
+            'CONFIRMED',
+            'ONGOING',
+            'ENDED'
         )
+    )
 );
 
 --------------------------------------------------
@@ -166,38 +166,36 @@ CREATE TABLE ride (
 --------------------------------------------------
 
 CREATE TABLE payment (
-                         id BIGSERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
 
-                         payment_method VARCHAR(20),
+    payment_method VARCHAR(20),
 
-                         ride_id BIGINT UNIQUE,
+    ride_id BIGINT UNIQUE,
 
-                         amount DOUBLE PRECISION,
+    amount DOUBLE PRECISION,
 
-                         payment_status VARCHAR(20),
+    payment_status VARCHAR(20),
 
-                         payment_time TIMESTAMP,
+    payment_time TIMESTAMP,
 
-                         CONSTRAINT fk_payment_ride
-                             FOREIGN KEY (ride_id)
-                                 REFERENCES ride(id),
+    CONSTRAINT fk_payment_ride
+        FOREIGN KEY (ride_id)
+            REFERENCES ride(id),
 
-                         CONSTRAINT chk_payment_method
-                             CHECK (
-                                 payment_method IN (
-                                                    'CASH',
-                                                    'WALLET'
-                                     )
-                                 ),
+    CONSTRAINT chk_payment_method CHECK (
+        payment_method IN (
+                'CASH',
+                'WALLET'
+        )
+    ),
 
-                         CONSTRAINT chk_payment_status
-                             CHECK (
-                                 payment_status IN (
-                                                    'PENDING',
-                                                    'CONFIRMED',
-                                                    'REFUNDED'
-                                     )
-                                 )
+    CONSTRAINT chk_payment_status CHECK (
+        payment_status IN (
+                'PENDING',
+                'CONFIRMED',
+                'REFUNDED'
+        )
+    )
 );
 
 --------------------------------------------------
@@ -205,15 +203,15 @@ CREATE TABLE payment (
 --------------------------------------------------
 
 CREATE TABLE wallet (
-                        id BIGSERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
 
-                        user_id BIGINT UNIQUE NOT NULL,
+    user_id BIGINT UNIQUE NOT NULL,
 
-                        balance DOUBLE PRECISION,
+    balance DOUBLE PRECISION,
 
-                        CONSTRAINT fk_wallet_user
-                            FOREIGN KEY (user_id)
-                                REFERENCES app_user(id)
+    CONSTRAINT fk_wallet_user
+        FOREIGN KEY (user_id)
+            REFERENCES app_user(id)
 );
 
 --------------------------------------------------
@@ -221,43 +219,41 @@ CREATE TABLE wallet (
 --------------------------------------------------
 
 CREATE TABLE wallet_transaction (
-                                    id BIGSERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
 
-                                    amount DOUBLE PRECISION,
+    amount DOUBLE PRECISION,
 
-                                    transaction_type VARCHAR(20),
+    transaction_type VARCHAR(20),
 
-                                    transaction_method VARCHAR(20),
+    transaction_method VARCHAR(20),
 
-                                    ride_id BIGINT,
+    ride_id BIGINT,
 
-                                    transaction_id VARCHAR(255),
+    transaction_id VARCHAR(255),
 
-                                    wallet_id BIGINT,
+    wallet_id BIGINT,
 
-                                    timestamp TIMESTAMP,
+    timestamp TIMESTAMP,
 
-                                    CONSTRAINT fk_wallet_transaction_wallet
-                                        FOREIGN KEY (wallet_id)
-                                            REFERENCES wallet(id),
+    CONSTRAINT fk_wallet_transaction_wallet
+        FOREIGN KEY (wallet_id)
+            REFERENCES wallet(id),
 
-                                    CONSTRAINT fk_wallet_transaction_ride
-                                        FOREIGN KEY (ride_id)
-                                            REFERENCES ride(id),
+    CONSTRAINT fk_wallet_transaction_ride
+        FOREIGN KEY (ride_id)
+            REFERENCES ride(id),
 
-                                    CONSTRAINT chk_transaction_type
-                                        CHECK (
-                                            transaction_type IN (
-                                                                 'CREDIT',
-                                                                 'DEBIT'
-                                                )
-                                            ),
+    CONSTRAINT chk_transaction_type CHECK (
+        transaction_type IN (
+            'CREDIT',
+            'DEBIT'
+        )
+    ),
 
-                                    CONSTRAINT chk_transaction_method
-                                        CHECK (
-                                            transaction_method IN (
-                                                                   'BANKING',
-                                                                   'RIDE'
-                                                )
-                                            )
+    CONSTRAINT chk_transaction_method CHECK (
+        transaction_method IN (
+            'BANKING',
+            'RIDE'
+        )
+    )
 );

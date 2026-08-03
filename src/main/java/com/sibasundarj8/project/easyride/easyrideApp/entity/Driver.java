@@ -8,8 +8,14 @@ import org.locationtech.jts.geom.Point;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(
+        indexes = {
+                @Index(name = "idx_driver_vehicle_no", columnList = "vehicleNo")
+        }
+)
 public class Driver {
 
     @Id
@@ -27,10 +33,17 @@ public class Driver {
     @Enumerated(EnumType.STRING)
     private VehicleType vehicleType;
 
-    private Integer ratingSum;
-    private Integer ratingCount;
-    private Double rating;
-    private Boolean available;
+    @Builder.Default
+    private Integer ratingSum = 0;
+
+    @Builder.Default
+    private Integer ratingCount = 0;
+
+    @Builder.Default
+    private Double rating = 0.0;
+
+    @Builder.Default
+    private Boolean available = true;
 
     @Column(columnDefinition = "geometry(Point, 4326)")
     private Point currentLocation;

@@ -1,6 +1,7 @@
 package com.sibasundarj8.project.easyride.easyrideApp.service;
 
 import com.sibasundarj8.project.easyride.easyrideApp.dto.DriverDto;
+import com.sibasundarj8.project.easyride.easyrideApp.dto.OnboardDriverDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.SignupDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.UserDto;
 import com.sibasundarj8.project.easyride.easyrideApp.entity.User;
@@ -11,7 +12,7 @@ public interface IAuthService {
 
     UserDto signup(SignupDto signupDto);
 
-    DriverDto onboardNewDriver(Long userId);
+    DriverDto onboardNewDriver(Long userId,  OnboardDriverDto onboardDriverDto);
 
     User getCurrentUser();
 }

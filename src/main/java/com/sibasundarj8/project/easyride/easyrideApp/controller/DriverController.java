@@ -1,5 +1,6 @@
 package com.sibasundarj8.project.easyride.easyrideApp.controller;
 
+import com.sibasundarj8.project.easyride.easyrideApp.dto.DriverDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.OtpDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RateDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public class DriverController {
 
     private final IDriverService driverService;
+
+    @GetMapping("/my_profile")
+    public ResponseEntity<DriverDto> getMyProfile() {
+        return ResponseEntity.ok(driverService.getMyProfile());
+    }
 
     @GetMapping("/rides")
     public ResponseEntity<Page<RideDto>> getMyRides(@RequestParam(required = false, defaultValue = "0") Integer page) {

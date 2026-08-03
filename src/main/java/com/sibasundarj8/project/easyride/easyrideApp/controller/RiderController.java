@@ -3,6 +3,7 @@ package com.sibasundarj8.project.easyride.easyrideApp.controller;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RateDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideDto;
 import com.sibasundarj8.project.easyride.easyrideApp.dto.RideRequestDto;
+import com.sibasundarj8.project.easyride.easyrideApp.dto.RiderDto;
 import com.sibasundarj8.project.easyride.easyrideApp.service.IRiderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class RiderController {
 
     private final IRiderService riderService;
+
+    @GetMapping("/my_profile")
+    public ResponseEntity<RiderDto> getMyProfile() {
+        return ResponseEntity.ok(riderService.getMyProfile());
+    }
 
     @GetMapping("/rides")
     public ResponseEntity<Page<RideDto>> getMyRides(

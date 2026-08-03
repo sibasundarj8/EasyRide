@@ -20,7 +20,12 @@ public class Rider {
     @JoinColumn(name = "id")
     private User user;
 
-    private Integer ratingSum;
-    private Integer ratingCount;
-    private Double rating;
+    @Builder.Default
+    private Integer ratingSum = 0;
+
+    @Builder.Default
+    private Integer ratingCount = 0;
+
+    @Builder.Default
+    private Double rating = 0.0;
 }
